@@ -1,49 +1,38 @@
 class LRandom
-	def initialize(seed,numStreams=1)
+	def initialize(seed=1,numStreams=1,a = 48271,m=2**31-1)
 		@seed=seed
 		@numStreams=numStreams
 		@x = seed
-		if 1.size == 4
+		@a = a
+		@m = m
+=begin		if 1.size == 4
 			@m=2**31-1
-			@a=48271
 		elsif 1.size == 8
 			#@m=2**63-25
 			#puts @m
 			@m=2**31-1
 			@a=48271
 		end
-		@q = (@m/a).to_i
-		@r = @a % @m
-		if @numStreams > 1
-			@jump = getJump()
-			plantSeeds()
-		end
-		
+=end
+		@q = (@m/@a)
+		@r = @m % @a
 	end
+	def checkMC(a,m)
+		return (m % a) < (m/a)
+	end 
 	def nextInt
-		t = @a*(@x % @q)-@r*(@x/@q).to_i
-		if t > 0
-			return t
-		else 
-			return t + @m
+		temp = @x
+		if checkMC(@a,@m)
+			t = @a*(@x % @q)-@r*(@x/@q)
+			if t > 0
+				@x = t
+			else 
+				@x =t+@m
+			end
+		else
+			puts "not modulus compatable"
+			@x = (@a*@x) % @m
 		end
+		return temp
 	end
-	def getJump
-		dist = (@m/@numStreams).to_i
-		while !checkMC((@a**dist) % @m)
-				dist-=1
-		end
-		return dist
-	end
-	def plantSeeds(jump)
-		for i 1..@numStreams
-
-		end
-	end
-	def checkMC(a)
-		r = a % @m
-		q = (@m/a).to_i
-		return r < q
-	end
-	def 
 end
