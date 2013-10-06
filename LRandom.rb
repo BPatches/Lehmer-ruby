@@ -1,10 +1,10 @@
 class LRandom
-
+  attr_accessor :j
   def initialize(seed=1,numStreams=1,a = 48271,m=2**31-1)
     @seed=seed
     @numStreams=numStreams
     @numDraws=[0]
-    @x = [seed]
+    @lastX = [seed]
     @a = a
     @m = m
     @q = (@m/@a)
@@ -31,17 +31,21 @@ class LRandom
   def initStreams
     @j = @m/@numStreams
     aj = modPow(@a,@j,@m)
-    while not checkMC (aj) do
+    while not checkMC(aj,@m) do
       @j -= 1
       aj = modPow(@a,@j,@m)
     end
     (@numStreams-1).times do |i|
       qt = (@m/aj)
       rt = @m % aj
-      @x.add(nexInt(i,aj,qt,rt))
-      @numDraws.add(0)
+      temp = @lastX[i]
+      @lastX.push(nextInt(i,aj,qt,rt))
+      @lastX[i]=temp
+      @numDraws.push(0)
       @alreadyWorned[i] = []
     end
+    
+      @alreadyWorned[@numStreams-1] = []
   end
   
   def checkMC(a,m)
@@ -53,18 +57,23 @@ class LRandom
       overlap = (streamNum + @numDraws[streamNum]/@j) % @numStreams
       if not @alreadyWorned[streamNum].include? overlap
         $stderr.puts "Stream #{streamNum} overlaping with stream #{overlap}"
-        @alreadyWorned[streamNum].add(overlap)
+        @alreadyWorned[streamNum].push(overlap)
       end
     end
-    temp = @x[streamNum]  
-    t = a * (@x[streamNum] % q) - r*(@x[streamNum] / q)
-    if t > 0
-      @x[streamNum] = t
-    else 
-      @x[streamNum] = t+@m
+    temp = @lastX[streamNum]
+    if checkMC(a,@m) then
+      t = a * (temp % q) - r*(temp / q)
+      
+      if t > 0
+        @lastX[streamNum] = t
+      else 
+        @lastX[streamNum] = t+@m
+      end
+    else
+      @lastX[streamNum] = (a * temp) % @m
     end
     @numDraws[streamNum] += 1
-    return temp
+    return @lastX[streamNum]
   end
   
 end
