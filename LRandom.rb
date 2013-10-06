@@ -47,7 +47,9 @@ class LRandom
     
       @alreadyWorned[@numStreams-1] = []
   end
-  
+  def random(lBound=0,rBound=1,streamNum=0)
+  	return ((rBound-lBound).to_f*nextInt(streamNum)).to_f/@m.to_f+lBound.to_f
+  end
   def checkMC(a,m)
     return (m % a) < (m / a)
   end 

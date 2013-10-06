@@ -1,4 +1,4 @@
-require "./LRandom"
+require_relative "LRandom"
 require "test/unit"
  
 class TestLRandom < Test::Unit::TestCase
@@ -37,5 +37,27 @@ class TestLRandom < Test::Unit::TestCase
     assert_equal(a.j,14,"Bad jump calc")
     assert_equal([3,9,27,19,26,16,17,20,29,25],res,"Bad stream 0 generation")
     assert_equal([30,28,22,4,12,5,15,14,11,2],res2,"Bad stream 1 generation")
+  end
+  def test_random01
+    a = LRandom.new()
+    sum = 0
+    10000.times{
+      temp = a.random
+      sum += temp
+      assert_true(temp > 0 && temp<1)
+    }
+    avg=sum.to_f/10000
+    puts avg
+  end
+  def test_random510
+    a = LRandom.new(124325)
+    sum = 0
+    100000.times{
+      temp = a.random(5,10,0)
+      sum += temp
+      assert_true(temp > 5 && temp<10)
+    }
+    avg=sum.to_f/100000
+    puts avg
   end
 end
