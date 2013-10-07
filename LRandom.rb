@@ -1,49 +1,79 @@
 class LRandom
-	def initialize(seed,numStreams=1)
-		@seed=seed
-		@numStreams=numStreams
-		@x = seed
-		if 1.size == 4
-			@m=2**31-1
-			@a=48271
-		elsif 1.size == 8
-			#@m=2**63-25
-			#puts @m
-			@m=2**31-1
-			@a=48271
-		end
-		@q = (@m/a).to_i
-		@r = @a % @m
-		if @numStreams > 1
-			@jump = getJump()
-			plantSeeds()
-		end
-		
-	end
-	def nextInt
-		t = @a*(@x % @q)-@r*(@x/@q).to_i
-		if t > 0
-			return t
-		else 
-			return t + @m
-		end
-	end
-	def getJump
-		dist = (@m/@numStreams).to_i
-		while !checkMC((@a**dist) % @m)
-				dist-=1
-		end
-		return dist
-	end
-	def plantSeeds(jump)
-		for i 1..@numStreams
-
-		end
-	end
-	def checkMC(a)
-		r = a % @m
-		q = (@m/a).to_i
-		return r < q
-	end
-	def 
+  attr_accessor :j
+  def initialize(seed=1,numStreams=1,a = 48271,m=2**31-1)
+    @seed=seed
+    @numStreams=numStreams
+    @numDraws=[0]
+    @lastX = [seed]
+    @a = a
+    @m = m
+    @q = (@m/@a)
+    @r = @m % @a
+    @alreadyWorned = {0=>[]}
+    initStreams
+  end
+  
+  def modPow(base,exponent,modulus)
+    @exponent = exponent
+    @modulus = modulus
+    @base = base
+    result = 1
+    while @exponent>0
+      if (@exponent % 2 == 1)
+        result = (result*@base) % @modulus
+      end
+      @exponent = @exponent >> 1
+      @base = @base**2 % @modulus
+    end
+    return result
+  end
+  
+  def initStreams
+    @j = @m/@numStreams
+    aj = modPow(@a,@j,@m)
+    while not checkMC(aj,@m) do
+      @j -= 1
+      aj = modPow(@a,@j,@m)
+    end
+    (@numStreams-1).times do |i|
+      qt = (@m/aj)
+      rt = @m % aj
+      temp = @lastX[i]
+      @lastX.push(nextInt(i,aj,qt,rt))
+      @lastX[i]=temp
+      @numDraws.push(0)
+      @alreadyWorned[i] = []
+    end
+    
+      @alreadyWorned[@numStreams-1] = []
+  end
+  
+  def checkMC(a,m)
+    return (m % a) < (m / a)
+  end 
+  
+  def nextInt(streamNum=0,a=@a,q=@q,r=@r)
+    if(@numDraws[streamNum]>@j )
+      overlap = (streamNum + @numDraws[streamNum]/@j) % @numStreams
+      if not @alreadyWorned[streamNum].include? overlap
+        $stderr.puts "Stream #{streamNum} overlaping with stream #{overlap}"
+        @alreadyWorned[streamNum].push(overlap)
+      end
+    end
+    temp = @lastX[streamNum]
+    if checkMC(a,@m) then
+      t = a * (temp % q) - r*(temp / q)
+      
+      if t > 0
+        @lastX[streamNum] = t
+      else 
+        @lastX[streamNum] = t+@m
+      end
+    else
+      @lastX[streamNum] = (a * temp) % @m
+    end
+    @numDraws[streamNum] += 1
+    return @lastX[streamNum]
+  end
+  
 end
