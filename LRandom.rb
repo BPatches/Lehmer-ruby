@@ -75,5 +75,32 @@ class LRandom
     @numDraws[streamNum] += 1
     return @lastX[streamNum]
   end
-  
+
+  def uniform(lowerBound = 0, upperBound = 1, streamNum = 0)
+    if lowerBound >= upperBound then
+      $stderr.puts "uniform lower bound not less then upper bound"
+      return 0
+    end
+    nextI = nextInt(streamNum)
+    tempF = nextI.to_f() / @m
+    return tempF*upperBound + lowerBound
+  end
+
+  def equalikely(lowerBound = 0, upperBound = 2, streamNum = 0)
+    return uniform(lowerBound,upperBound,streamNum).floor
+  end
+
+  def shuffle( inList, streamNum=0, upTo = -1)
+    if upTo == -1 then
+      iterOver = (0...inList.length)
+    else
+      iterOver = (0..upTo)
+    end
+    iterOver.each do |i|
+      swapI = equalikely(i,inList.length,streamNum)
+      tmp = inList[i]
+      inList[i]=inList[swapI]
+      inList[swapI]=tmp
+    end
 end
+
