@@ -102,5 +102,6 @@ class LRandom
       inList[i]=inList[swapI]
       inList[swapI]=tmp
     end
+  end
 end
 
