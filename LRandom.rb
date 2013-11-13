@@ -83,7 +83,7 @@ class LRandom
     end
     nextI = nextInt(streamNum)
     tempF = nextI.to_f() / @m
-    return tempF*upperBound + lowerBound
+    return tempF*(upperBound-lowerBound) + lowerBound
   end
 
   def equalikely(lowerBound = 0, upperBound = 2, streamNum = 0)
