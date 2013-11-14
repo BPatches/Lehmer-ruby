@@ -38,5 +38,12 @@ class TestLRandom < Test::Unit::TestCase
     assert_equal([3,9,27,19,26,16,17,20,29,25],res,"Bad stream 0 generation")
     assert_equal([30,28,22,4,12,5,15,14,11,2],res2,"Bad stream 1 generation")
   end
-
+  def test_with_authers
+    a = LRandom.new(1,256)
+    256.times do |i|
+      IO.readlines("stream#{i}.dat").each do |line|
+        assert_equal( a.nextInt(i),line.to_i)
+      end
+    end
+  end
 end
