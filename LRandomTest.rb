@@ -47,7 +47,7 @@ class TestLRandom < Test::Unit::TestCase
       end
     end
   end
-=end
+
   def test_shuffle
     a=LRandom.new(1)
     l=[]
@@ -58,4 +58,5 @@ class TestLRandom < Test::Unit::TestCase
     puts l
     assert_not_equal(l,[0,1,2,3,4,5,6,7,8,9])
   end
+=end
 end
