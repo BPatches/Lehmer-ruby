@@ -103,7 +103,7 @@ class LRandom
       inList[swapI]=tmp
     end
   end
-  def exponenential(mu, streamNum = 0)
+  def exponential(mu, streamNum = 0)
     return -mu * Math.log(1-uniform(0,1,streamNum))
   end
 end
